@@ -1,10 +1,10 @@
 from django.core import validators as V
-from django.core.validators import MinValueValidator
 from django.db import models
 
 from core.enums.regex_enum import RegexEnum
 from core.models import BaseModel
 
+from apps.pizza.managers import PizzaManager
 from apps.pizza_shop.models import PizzaShopModel
 
 
@@ -26,3 +26,5 @@ class PizzaModel(BaseModel):
     price = models.FloatField()
     day = models.CharField(max_length=9, choices=DaysChoices.choices)
     pizza_shop = models.ForeignKey(PizzaShopModel, on_delete=models.CASCADE, related_name='pizzas')
+
+    objects = PizzaManager() # Manager for frequent DB requests

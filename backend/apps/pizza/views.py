@@ -11,7 +11,7 @@ class PizzaListCreateView(ListAPIView):
     #queryset = PizzaModel.objects.less_than_size(100)# for custom managers(frequent requests)
     queryset = PizzaModel.objects.all()
     filterset_class = PizzaFilter
-    # permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
 
 
 class PizzaRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):

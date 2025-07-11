@@ -1,14 +1,18 @@
 import os
 
+from django.contrib.auth import get_user_model
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
+from configs.celery import app
 from core.services.jwt_service import ActivateToken, JWTService, RecoveryToken
 
+UserModel = get_user_model()
 
 class EmailService:
-    @classmethod
-    def __send_email(cls, to:str, template_name:str, context:dict, subject:str)->None:
+    @staticmethod
+    @app.task # WE GIVE CELERY TASK TO SEND EMAIL INDEPENDENTLY OF DJANGO
+    def __send_email(to:str, template_name:str, context:dict, subject:str)->None:
         template = get_template(template_name)
         html_content = template.render(context)
         msg = EmailMultiAlternatives(
@@ -20,10 +24,10 @@ class EmailService:
         msg.send()
 
     @classmethod
-    def register(cls, user):# we need custom token to check which user clicked email register url
+    def register(cls, user):
         token = JWTService.create_token(user, ActivateToken)
         url = f'http://localhost/activate/{token}'
-        cls.__send_email(
+        cls.__send_email.delay( # and here we call this method via celery
             to=user.email,
             template_name='register.html',
             context={'name': user.profile.name, 'url': url},
@@ -40,3 +44,14 @@ class EmailService:
             context={'url': url},
             subject='Recover'
         )
+
+    @staticmethod
+    @app.task
+    def spam():
+        for user in UserModel.objects.all():
+            EmailService.__send_email(
+                to=user.email,
+                template_name='spam.html',
+                context={},
+                subject='SPAM'
+            )

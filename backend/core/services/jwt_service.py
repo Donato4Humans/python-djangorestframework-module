@@ -22,6 +22,10 @@ class RecoveryToken(ActionToken):
     token_type = ActionTokenEnum.RECOVERY.token_type
     lifetime = ActionTokenEnum.RECOVERY.lifetime
 
+class SocketToken(ActionToken):
+    token_type = ActionTokenEnum.SOCKET.token_type
+    lifetime = ActionTokenEnum.SOCKET.lifetime
+
 class JWTService: # for every user will be created token and into token payload will be saved user id
     @staticmethod
     def create_token(user, token_class: ActionTokenClassType):

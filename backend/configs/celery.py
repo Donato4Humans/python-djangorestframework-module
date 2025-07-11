@@ -13,7 +13,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send_spam_every_minutes': {
         'task': 'core.services.email_service.spam',
-        'schedule': crontab()#by default makes task every minute
+        'schedule': crontab(day_of_month=1)#by default makes task every minute
         #'args': (),# if your func for task have args they go there
     },
 }

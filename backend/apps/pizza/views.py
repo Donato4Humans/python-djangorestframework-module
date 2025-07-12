@@ -1,16 +1,35 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
-from rest_framework.permissions import AllowAny
+from django.utils.decorators import method_decorator
+
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+
+from drf_yasg.utils import swagger_auto_schema
 
 from apps.pizza.filter import PizzaFilter
 from apps.pizza.models import PizzaModel
-from apps.pizza.serializers import PizzaPhotoSerializer, PizzaSerializer
+from apps.pizza.serializers import PizzaPhotoSerializer, PizzaResponseSerializer, PizzaSerializer
 
 
+@method_decorator( # if you have just parent methods without override
+    name='get',
+    decorator=swagger_auto_schema(
+        security=[],
+        responses={200: PizzaResponseSerializer()},#changes response in doc
+        operation_summary='get all pizzas'# shows info on method preview
+    )
+)
 class PizzaListCreateView(ListCreateAPIView):
     serializer_class = PizzaSerializer
     queryset = PizzaModel.objects.all()
     filterset_class = PizzaFilter
-    permission_classes = (AllowAny, )# CHANGE PERMISSIONS
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
+    # @swagger_auto_schema( if you have override method or custom
+    #     security=[],
+    #     responses={200: PizzaResponseSerializer()},  # changes response in doc
+    #     operation_summary='get all pizzas'  # shows info on method preview
+    # )
+    # def get(self, *args, **kwargs):
 
 
 class PizzaRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):

@@ -8,11 +8,20 @@ from apps.pizza_shop.serializer import PizzaShopSerializer
 
 
 class PizzaShopListCreateView(ListCreateAPIView):
+    """
+    get:
+        get all pizza shop list
+    post:
+        create new pizza shop
+    """
     serializer_class = PizzaShopSerializer
     queryset = PizzaShopModel.objects.all()
 
 class PizzaShopAddPizzaView(GenericAPIView):
     queryset = PizzaShopModel.objects.all()
+
+    def get_serializer(self, *args, **kwargs):
+        return None
 
     def post(self, *args, **kwargs):
         pizza_shop = self.get_object()

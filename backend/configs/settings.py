@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.pizza',
     'apps.pizza_shop',
+    'apps.chat',
 ]
 
 MIDDLEWARE = [
